@@ -16,6 +16,9 @@ public class Grid : MonoBehaviour
     void Awake()
     {
         this.grid = new Node[width, height];
+    }
+    private void Start()
+    {
         GenerateGrid();
         GridControl.Instance.OnInitGrid();
     }

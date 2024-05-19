@@ -2,11 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public enum GridEventType
 {
-    INIT_GRID_OBJECT
+    INIT_GRID_OBJECT,
+    MOVE_ACTION_OBJECT,
 }
 public enum GridObjectType
 {
@@ -41,10 +44,9 @@ public class GridControl : MonoBehaviour
     private List<EventDescriptorGrid> EventsGrid = new List<EventDescriptorGrid>();
     private List<HandlerEventGrid> HandlersGrid = new List<HandlerEventGrid>();
 
-    private static GridControl _instance;
     public static GridControl Instance {
-        get { if (_instance == null) _instance = new GridControl(); return _instance; } 
-        private set { _instance = value; } 
+        get;
+        private set;
     }
     // Start is called before the first frame update
 
@@ -59,41 +61,26 @@ public class GridControl : MonoBehaviour
             Destroy(this);
         }
     }
-    void Start()
-    {
-       
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-     
-    }
-
-    private void OnDrawGizmos()
-    {
-        
-  
-    }
-
-    private void CreateInitGridObjectEvent(GridObject gridObject)
+ 
+    private void CreateEvent(ref EventHandler handler, GridEventType eventType, GridObject gridObject, Action? callback = null)
     {
         EventDescriptorGrid gridEvent = new EventDescriptorGrid();
         gridEvent.IdEvent = Guid.NewGuid();
-
-        gridObject.OnInitObject += (object sender, EventArgs args) =>
+        gridEvent.GridObject = gridObject;
+        gridEvent.GridEventType = eventType;
+        handler += (object sender, EventArgs args) =>
         {
+            Debug.Log("TRIGGERED");
             Guid guid = gridEvent.IdEvent;
-            GridObjectsWaiting.Remove(gridObject);
+            if(callback != null) callback();
             HandleEvent(guid);
         };
-
         EventsGrid.Add(gridEvent);
     }
-
     private void HandleEvent(Guid guid)
     {
         EventDescriptorGrid eventDescriptorGrid = EventsGrid.Find(x => x.IdEvent == guid);
+        Debug.Log("HANDLE INVOKED");
         if(eventDescriptorGrid.IdEvent == guid)
         {
             List<HandlerEventGrid> handlers = new List<HandlerEventGrid>();
@@ -117,18 +104,57 @@ public class GridControl : MonoBehaviour
     {
         if(!GridObjectsList.Contains(gridObject))
         {
+            Debug.Log("GRID OBJECT HAS BEEN ATTACHED");
             GridObjectsList.Add(gridObject);
             GridObjectsWaiting.Add(gridObject);
-            CreateInitGridObjectEvent(gridObject);
+            //CreateInitGridObjectEvent(gridObject);
+            CreateEvent(
+                ref gridObject.OnInitObject,GridEventType.INIT_GRID_OBJECT,
+                gridObject, 
+                () => { GridObjectsWaiting.Remove(gridObject); }
+            );
         }
+    }
+    public void attachMoveCharacter(MoveCharacter moveCharacter)
+    {
+        //CreateMoveStartGridObjectEvent(moveCharacter);
+        CreateEvent(ref moveCharacter.OnUnitMoveStart, GridEventType.MOVE_ACTION_OBJECT, TargetObject);
     }
 
     public void OnInitGrid()
     {
+        Debug.Log("INIT GRID COMPLETE");
         GridSystemVisual.Instance.Init();
-        foreach (var obj in GridObjectsWaiting)
+        GridObject[] cloneList = new GridObject[GridObjectsList.Count];
+        GridObjectsWaiting.CopyTo(cloneList);
+        foreach (var obj in cloneList) 
         {
             obj.Init();
         }
+    }
+    public void AddHandlerToGridControl(object sender, HandlerEventGrid handlerEventGrid)
+    {
+        HandlersGrid.Add(handlerEventGrid);
+    }
+
+    public void AddStartMoveObjectTarget(Action<GridObject> callback, object sender)
+    {
+        var handler = new HandlerEventGrid();
+        handler.Handler = callback;
+        handler.GridEventType = GridEventType.MOVE_ACTION_OBJECT;
+        handler.GridObjectType = GridObjectType.TARGET;
+        handler.ComponentType = sender.GetType();
+
+        HandlersGrid.Add(handler);
+    }
+
+
+    public void UpdateTargetCharacter(GridObject gridObject)
+    {
+        TargetObject = gridObject;
+    }
+    public GridObject GetTargetCharacter()
+    {
+        return TargetObject;
     }
 }

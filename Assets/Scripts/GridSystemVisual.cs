@@ -15,6 +15,8 @@ public class GridSystemVisual : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
+            GridControl.Instance.AddHandlerToGridControl(this,this.GetInitObjectTargetDescriptor(TargetVisualUpdate));
+            GridControl.Instance.AddHandlerToGridControl(this, this.GetMoveTargetDescriptor(MoveTargetObjectStart));
         }
         else
         {
@@ -37,7 +39,10 @@ public class GridSystemVisual : MonoBehaviour
             }
         }
     }
-
+    public void MoveTargetObjectStart(GridObject gridObject)
+    {
+        Debug.Log("MOVE START");
+    }
 
     public void ActiveAllPosition()
     {
@@ -59,6 +64,11 @@ public class GridSystemVisual : MonoBehaviour
         {
             gridVisualSingles[node.pos_x,node.pos_y].Active();
         }
+    }
+
+    private void TargetVisualUpdate(GridObject gridObject)
+    {
+        ActiveList(gridObject.GetMoveScope());
     }
 
 }

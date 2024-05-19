@@ -7,10 +7,11 @@ using UnityEngine;
 public class MoveCharacter : MonoBehaviour
 {
     public event EventHandler OnSelectedUnitChange;
+    public EventHandler OnUnitMoveStart;
     [SerializeField] Grid grid;
     [SerializeField] LayerMask TerrainMask;
     [SerializeField] LayerMask UnitMask;
-    [SerializeField] GridObject targetCharacter;
+    GridObject targetCharacter;
     PathFinding PathFinding;
     List<PathNode> pathNodes = new List<PathNode>();
 
@@ -21,14 +22,15 @@ public class MoveCharacter : MonoBehaviour
         {
             Instance = this;
             PathFinding = grid.GetComponent<PathFinding>();
-            targetCharacter.OnInitObject += (object sender, EventArgs args) => {
-                 
-            };
            
         }
     }
 
-
+    private void Start()
+    {
+        targetCharacter = GridControl.Instance.GetTargetCharacter();
+        GridControl.Instance.attachMoveCharacter(this);
+    }
     // Update is called once per frame
     void Update()
     {
@@ -41,6 +43,7 @@ public class MoveCharacter : MonoBehaviour
                 if(hit.transform.TryGetComponent(out GridObject unit))
                 { 
                     targetCharacter = unit;
+                    GridControl.Instance.UpdateTargetCharacter(unit);
                     OnSelectedUnitChange?.Invoke(this,null);
                 }
             }
@@ -48,11 +51,14 @@ public class MoveCharacter : MonoBehaviour
             {
                 Vector2Int posGrid = grid.getGridPosition(hit.point);
                 pathNodes = PathFinding.FindPath(targetCharacter.position.x , targetCharacter.position.y, posGrid.x, posGrid.y);
-
+                OnUnitMoveStart?.Invoke(this,null);
                 targetCharacter.GetComponent<Movement>().Move(pathNodes);
             }
         }
     }
+
+ 
+
     public GridObject GetSelectedGridObject()
     {
         return targetCharacter;

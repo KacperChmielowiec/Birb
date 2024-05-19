@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
 using static UnityEngine.RuleTile.TilingRuleOutput;
 
@@ -27,22 +28,33 @@ public class GridObject : MonoBehaviour
 
     public List<PathNode> GetMoveScope()
     {
-      
+        int Max = GetComponent<Character>()?.Scope ?? 0;
         List<PathNode> scope = new List<PathNode>();
+        for (int i = 0; i < Max; i++)
+        {
+            NextMoveScope(scope, i);
+        }
+        return scope;
+    }
+
+    private void NextMoveScope(List<PathNode> pathNodes, int step)
+    {
+        
         for (int i = -1; i < 2; i++)
         {
             for (int j = -1; j < 2; j++)
             {
                 if (i == 0 && j == 0) continue;
-                if (grid.BoundaryCheck(position.x + i, position.y + j) == false)
+                if (grid.BoundaryCheck(position.x + step + i, position.y + step + j) == false || !grid.CheckWalkable(position.x + step + i, position.y + step + j))
                 {
                     continue;
                 }
-                var NewPos = position + new Vector2Int(i,j);
-                scope.Add(grid.GetNode(NewPos));
+                var NewPos = position + new Vector2Int(i + step, j + step);
+                if(NewPos != null)
+                    pathNodes.Add(grid.GetNode(NewPos));
             }
         }
-        return scope;
+        return;
     }
 
     // Update is called once per frame

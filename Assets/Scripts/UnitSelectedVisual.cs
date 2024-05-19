@@ -27,7 +27,7 @@ public class UnitSelectedVisual : MonoBehaviour
 
     void UpdateSelected()
     {
-        if (MoveCharacter.Instance.GetSelectedGridObject() == unit && unit != null)
+        if (GridControl.Instance.GetTargetCharacter() == unit && unit != null)
         {
             _MeshRenderer.enabled = true;
         }

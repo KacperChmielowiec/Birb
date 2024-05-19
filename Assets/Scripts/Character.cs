@@ -5,6 +5,7 @@ using UnityEngine;
 public class Character : MonoBehaviour
 {
     [SerializeField] public string NameChar = string.Empty;
+    public int Scope = 2;
     // Start is called before the first frame update
     void Start()
     {
