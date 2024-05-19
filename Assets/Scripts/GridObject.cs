@@ -13,10 +13,10 @@ public class GridObject : MonoBehaviour
     public Vector2Int position;
     void Start()
     {
-        init();
+        GridControl.Instance.attachObject(this);
     }
 
-    private void init()
+    public void Init()
     {
         position = grid.getGridPosition(transform.position);
         grid.PlaceObject(this, position);
@@ -27,8 +27,7 @@ public class GridObject : MonoBehaviour
 
     public List<PathNode> GetMoveScope()
     {
-        Debug.Log("gridObject pos");
-        Debug.Log(position);
+      
         List<PathNode> scope = new List<PathNode>();
         for (int i = -1; i < 2; i++)
         {

@@ -17,12 +17,12 @@ public class Grid : MonoBehaviour
     {
         this.grid = new Node[width, height];
         GenerateGrid();
+        GridControl.Instance.OnInitGrid();
     }
     public PathNode GetNode(Vector2Int pos)
     {
         if(BoundaryCheck(pos))
         {
-            Debug.Log(pos);
             return new PathNode(pos.x,pos.y);
         }
         return null;
