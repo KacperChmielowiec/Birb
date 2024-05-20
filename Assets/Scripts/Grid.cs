@@ -20,7 +20,7 @@ public class Grid : MonoBehaviour
     private void Start()
     {
         GenerateGrid();
-        GridControl.Instance.OnInitGrid();
+        GameControl.Instance.OnInitGrid();
     }
     public PathNode GetNode(Vector2Int pos)
     {
@@ -49,10 +49,20 @@ public class Grid : MonoBehaviour
     {
         return grid[x, y].Passable;
     }
+    public bool CheckWalkable(Vector2Int pathNode)
+    {
+        return grid[pathNode.x, pathNode.y].Passable;
+    }
     public bool BoundaryCheck(Vector2Int pos)
     {
         if(pos.x >= width || pos.y >= height) return false;
         if(pos.x < 0 || pos.y < 0) return false;
+        return true;
+    }
+    public bool BoundaryCheck(PathNode pos)
+    {
+        if (pos.pos_x >= width || pos.pos_y >= height) return false;
+        if (pos.pos_x < 0 || pos.pos_y < 0) return false;
         return true;
     }
     public bool BoundaryCheck(int x, int y)
@@ -75,7 +85,16 @@ public class Grid : MonoBehaviour
         CheckPassableTerrain();
         
     }
-
+    public bool HasAnyUnitOnGridPosition(Vector2Int gridPosition)
+    {
+        Node gridNode = GetGridNode(gridPosition);
+        return gridNode?.HasAnyUnit() ?? false;
+    }
+    public Node GetGridNode(Vector2Int pathNode)
+    {
+        if(!BoundaryCheck(pathNode)) return null;
+        return grid[pathNode.x, pathNode.y];
+    }
     private void CheckPassableTerrain()
     {
         for (int i = 0; i < width; i++)

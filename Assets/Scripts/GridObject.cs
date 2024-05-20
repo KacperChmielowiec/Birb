@@ -14,7 +14,7 @@ public class GridObject : MonoBehaviour
     public Vector2Int position;
     void Start()
     {
-        GridControl.Instance.attachObject(this);
+       
     }
 
     public void Init()
@@ -26,37 +26,9 @@ public class GridObject : MonoBehaviour
         OnInitObject?.Invoke(this,EventArgs.Empty);
     }
 
-    public List<PathNode> GetMoveScope()
-    {
-        int Max = GetComponent<Character>()?.Scope ?? 0;
-        List<PathNode> scope = new List<PathNode>();
-        for (int i = 0; i < Max; i++)
-        {
-            NextMoveScope(scope, i);
-        }
-        return scope;
-    }
 
-    private void NextMoveScope(List<PathNode> pathNodes, int step)
-    {
-        
-        for (int i = -1; i < 2; i++)
-        {
-            for (int j = -1; j < 2; j++)
-            {
-                if (i == 0 && j == 0) continue;
-                if (grid.BoundaryCheck(position.x + step + i, position.y + step + j) == false || !grid.CheckWalkable(position.x + step + i, position.y + step + j))
-                {
-                    continue;
-                }
-                var NewPos = position + new Vector2Int(i + step, j + step);
-                if(NewPos != null)
-                    pathNodes.Add(grid.GetNode(NewPos));
-            }
-        }
-        return;
-    }
-
+    public Vector2Int GetGridPosition() { return position; }
+    public PathNode GetGridPositionNode() { return new PathNode(position.x, position.y); }
     // Update is called once per frame
     void Update()
     {

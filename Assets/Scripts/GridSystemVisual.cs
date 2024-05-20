@@ -1,74 +1,192 @@
 using System;
+using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static GridSystemVisual;
 
 public class GridSystemVisual : MonoBehaviour
 {
-    [SerializeField] private Transform GridVisualTile;
-    [SerializeField] private Grid grid;
-    GridVisualSingle[,] gridVisualSingles;
+
     public static GridSystemVisual Instance { get; private set; }
-    // Start is called before the first frame update
-    void Awake()
+
+
+    [Serializable]
+    public struct GridVisualTypeMaterial
     {
-        if (Instance == null)
+        public GridVisualType gridVisualType;
+        public Material material;
+    }
+
+    public enum GridVisualType
+    {
+        White,
+        Blue,
+        Red,
+        RedSoft,
+        Yellow,
+    }
+
+    [SerializeField] private Transform gridSystemVisualSinglePrefab;
+    [SerializeField] private List<GridVisualTypeMaterial> gridVisualTypeMaterialList;
+
+
+    private GridVisualSingle[,] gridSystemVisualSingleArray;
+
+
+    private void Awake()
+    {
+        if (Instance != null)
         {
-            Instance = this;
-            GridControl.Instance.AddHandlerToGridControl(this,this.GetInitObjectTargetDescriptor(TargetVisualUpdate));
-            GridControl.Instance.AddHandlerToGridControl(this, this.GetMoveTargetDescriptor(MoveTargetObjectStart));
+            Debug.LogError("There's more than one GridSystemVisual! " + transform + " - " + Instance);
+            Destroy(gameObject);
+            return;
         }
-        else
-        {
-            Destroy(this);
-        }
+        Instance = this;
     }
 
     public void Init()
     {
-        gridVisualSingles = new GridVisualSingle[grid.width, grid.height];
-        for (int i = 0; i < grid.height; i++)
+        gridSystemVisualSingleArray = new GridVisualSingle[
+            GameControl.Instance.grid.width,
+            GameControl.Instance.grid.height
+        ];
+
+        for (int x = 0; x < GameControl.Instance.grid.width; x++)
         {
-            for (int j = 0; j < grid.width; j++)
+            for (int z = 0; z < GameControl.Instance.grid.height; z++)
             {
-                if (grid.CheckWalkable(i, j))
+                if (GameControl.Instance.grid.CheckWalkable(x, z))
                 {
-                    var buffor = Instantiate(GridVisualTile, grid.GetWorldPosition(i, j, true) + new Vector3(0, 0.1f, 0), Quaternion.AngleAxis(90, new Vector3(0, 1, 0)));
-                    gridVisualSingles[i, j] = buffor.GetComponent<GridVisualSingle>();
+                    var buffor = Instantiate(gridSystemVisualSinglePrefab, GameControl.Instance.grid.GetWorldPosition(x, z, true) + new Vector3(0, 0.1f, 0), Quaternion.AngleAxis(90, new Vector3(0, 1, 0)));
+                    gridSystemVisualSingleArray[x, z] = buffor.GetComponent<GridVisualSingle>();
+                }
+            }
+        }
+
+       
+        //UnitActionSystem.Instance.OnSelectedActionChanged += UnitActionSystem_OnSelectedActionChanged;
+        //LevelGrid.Instance.OnAnyUnitMovedGridPosition += LevelGrid_OnAnyUnitMovedGridPosition;
+
+        UpdateGridVisual();
+    }
+
+    public void HideAllGridPosition()
+    {
+        for (int x = 0; x < GameControl.Instance.grid.width; x++)
+        {
+            for (int z = 0; z < GameControl.Instance.grid.height; z++)
+            {
+                if (GameControl.Instance.grid.CheckWalkable(x, z))
+                {
+                    gridSystemVisualSingleArray[x, z].Show(GetGridVisualTypeMaterial(GridVisualType.White));
                 }
             }
         }
     }
-    public void MoveTargetObjectStart(GridObject gridObject)
-    {
-        Debug.Log("MOVE START");
-    }
 
-    public void ActiveAllPosition()
+    private void ShowGridPositionRange(Vector2Int gridPosition, int range, GridVisualType gridVisualType)
     {
-        for (int i = 0; i < grid.height; i++)
+        List<Vector2Int> gridPositionList = new List<Vector2Int>();
+
+        for (int x = -range; x <= range; x++)
         {
-            for (int j = 0; j < grid.width; j++)
+            for (int z = -range; z <= range; z++)
             {
-                if (grid.CheckWalkable(i, j))
+                Vector2Int testGridPosition = gridPosition + new Vector2Int(x, z);
+
+                if (!GameControl.Instance.grid.BoundaryCheck(testGridPosition))
                 {
-                    gridVisualSingles[i, j].Active();
+                    continue;
                 }
+
+                int testDistance = Mathf.Abs(x) + Mathf.Abs(z);
+                if (testDistance > range)
+                {
+                    continue;
+                }
+
+                gridPositionList.Add(testGridPosition);
             }
         }
+
+        ShowGridPositionList(gridPositionList, gridVisualType);
     }
 
-    public void ActiveList(List<PathNode> nodes)
+    private void ShowGridPositionRangeSquare(Vector2Int gridPosition, int range, GridVisualType gridVisualType)
     {
-        foreach (PathNode node in nodes)
+        List<Vector2Int> gridPositionList = new List<Vector2Int>();
+
+        for (int x = -range; x <= range; x++)
         {
-            gridVisualSingles[node.pos_x,node.pos_y].Active();
+            for (int z = -range; z <= range; z++)
+            {
+                Vector2Int testGridPosition = gridPosition + new Vector2Int(x, z);
+
+                if (!GameControl.Instance.grid.BoundaryCheck(testGridPosition))
+                {
+                    continue;
+                }
+
+                gridPositionList.Add(testGridPosition);
+            }
+        }
+
+        ShowGridPositionList(gridPositionList, gridVisualType);
+    }
+
+    public void ShowGridPositionList(List<Vector2Int> gridPositionList, GridVisualType gridVisualType)
+    {
+        foreach (Vector2Int gridPosition in gridPositionList)
+        {
+            gridSystemVisualSingleArray[gridPosition.x, gridPosition.y].
+                Show(GetGridVisualTypeMaterial(gridVisualType));
         }
     }
 
-    private void TargetVisualUpdate(GridObject gridObject)
+    private void UpdateGridVisual()
     {
-        ActiveList(gridObject.GetMoveScope());
+        HideAllGridPosition();
+
+        GridObject selectedUnit = UnitActionSystem.Instance.GetSelectedUnit();
+        BaseAction selectedAction = UnitActionSystem.Instance.GetSelectedAction();
+
+        GridVisualType gridVisualType;
+
+        switch (selectedAction)
+        {
+            default:
+            case MoveAction moveAction:
+                gridVisualType = GridVisualType.White;
+                break;
+        }
+
+        ShowGridPositionList(
+            selectedAction.GetValidActionGridPositionList(), gridVisualType);
+    }
+
+    private void UnitActionSystem_OnSelectedActionChanged(object sender, EventArgs e)
+    {
+        UpdateGridVisual();
+    }
+
+    private void LevelGrid_OnAnyUnitMovedGridPosition(object sender, EventArgs e)
+    {
+        UpdateGridVisual();
+    }
+
+    private Material GetGridVisualTypeMaterial(GridVisualType gridVisualType)
+    {
+        foreach (GridVisualTypeMaterial gridVisualTypeMaterial in gridVisualTypeMaterialList)
+        {
+            if (gridVisualTypeMaterial.gridVisualType == gridVisualType)
+            {
+                return gridVisualTypeMaterial.material;
+            }
+        }
+
+        Debug.LogError("Could not find GridVisualTypeMaterial for GridVisualType " + gridVisualType);
+        return null;
     }
 
 }

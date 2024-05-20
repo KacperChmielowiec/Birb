@@ -46,7 +46,6 @@ public class PathFinding : MonoBehaviour
         while (openList.Count > 0)
         {
             
-            ;
             PathNode currentNode = openList[0];
             for(int i = 0; i <  openList.Count; i++)
             {
@@ -134,7 +133,14 @@ public class PathFinding : MonoBehaviour
         ret.Reverse();
         return ret;
     }
-
+    public bool HasPath(Vector2Int start, Vector2Int end)
+    {
+        return true;
+    }
+    public int GetPathLength(Vector2Int start, Vector2Int end)
+    {
+        return 1;
+    }
     // Update is called once per frame
     void Update()
     {

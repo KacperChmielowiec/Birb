@@ -7,4 +7,11 @@ public class Node
     public bool Passable;
     public GridObject GridObject;
     public float elevation;
+
+    public bool HasAnyUnit()
+    {
+        return GridObject != null;
+    }
+
+
 }

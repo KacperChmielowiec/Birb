@@ -4,31 +4,19 @@ using UnityEngine;
 
 public class GridVisualSingle : MonoBehaviour
 {
-    // Start is called before the first frame update
-    [SerializeField] MeshRenderer RenderVisualSingle;
-    void Start()
+
+    [SerializeField] private MeshRenderer meshRenderer;
+
+
+    public void Show(Material material)
     {
-        
+        meshRenderer.enabled = true;
+        meshRenderer.material = material;
     }
 
-    public void Active()
+    public void Hide()
     {
-        RenderVisualSingle.material.color = Color.green;
+        meshRenderer.enabled = false;
     }
 
-    public void Light()
-    {
-        RenderVisualSingle.material.color = Color.gray;
-    }
-
-    public void Disabled()
-    {
-        RenderVisualSingle.material.color = Color.red;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

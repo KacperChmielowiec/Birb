@@ -16,7 +16,7 @@ public class UnitSelectedVisual : MonoBehaviour
 
     private void Start()
     {
-        MoveCharacter.Instance.OnSelectedUnitChange += OnSelectedHandler;
+        //UnitActionSystem.Instance.OnSelectedUnitChange += OnSelectedHandler;
         UpdateSelected();
     }
 
@@ -27,7 +27,7 @@ public class UnitSelectedVisual : MonoBehaviour
 
     void UpdateSelected()
     {
-        if (GridControl.Instance.GetTargetCharacter() == unit && unit != null)
+        if (GameControl.Instance.GetTargetCharacter() == unit && unit != null)
         {
             _MeshRenderer.enabled = true;
         }
