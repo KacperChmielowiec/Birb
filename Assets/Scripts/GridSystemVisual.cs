@@ -25,7 +25,8 @@ public class GridSystemVisual : MonoBehaviour
         Red,
         RedSoft,
         Yellow,
-        Green
+        Green,
+        Orange,
     }
 
     [SerializeField] private Transform gridSystemVisualSinglePrefab;
@@ -153,7 +154,7 @@ public class GridSystemVisual : MonoBehaviour
     {
         HideAllGridPosition();
 
-        GridObject selectedUnit = UnitActionSystem.Instance.GetSelectedUnit();
+        Character selectedUnit = UnitActionSystem.Instance.GetSelectedUnit()?.GetComponent<Character>();
         BaseAction selectedAction = UnitActionSystem.Instance.GetSelectedAction();
 
         GridVisualType gridVisualType;
@@ -162,7 +163,7 @@ public class GridSystemVisual : MonoBehaviour
         {
             default:
             case MoveAction moveAction:
-                gridVisualType = GridVisualType.Green;
+                gridVisualType = selectedUnit.GetActionPoints() > selectedAction.GetActionPointsCost() ? GridVisualType.Green : GridVisualType.Orange;
                 break;
         }
 

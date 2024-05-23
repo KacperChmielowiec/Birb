@@ -79,6 +79,9 @@ public class Character : MonoBehaviour
         return null;
     }
 
-
+    public BaseAction[] GetBaseActionsArray()
+    {
+        return baseActionArray;
+    }
 
 }

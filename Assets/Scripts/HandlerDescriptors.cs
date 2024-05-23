@@ -12,8 +12,11 @@ public static class HandlerDescriptors
         {EventType.OnAnyActionCompleted, new HandlerEventDescriptor() { GridEventType = EventType.OnAnyActionCompleted} },
         {EventType.OnSelectedActionChanged, new HandlerEventDescriptor() { GridEventType = EventType.OnSelectedActionChanged} },
         {EventType.OnAnyUnitMovedGridPosition, new HandlerEventDescriptor() { GridEventType = EventType.OnAnyUnitMovedGridPosition} },
-        {EventType.OnAnyActionStarted, new HandlerEventDescriptor() { GridEventType = EventType.OnAnyActionStarted} }
+        {EventType.OnAnyActionStarted, new HandlerEventDescriptor() { GridEventType = EventType.OnAnyActionStarted} },
+        {EventType.OnBusyChanged, new HandlerEventDescriptor() { GridEventType = EventType.OnBusyChanged} },
+        {EventType.OnActionStarted, new HandlerEventDescriptor() { GridEventType = EventType.OnActionStarted } }
     };
+
 
     public static HandlerEventDescriptor GetMemberDescriptor<T>(Type component, Action<object,T> action, EventType type)
     {

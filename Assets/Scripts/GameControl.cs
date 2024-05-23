@@ -14,7 +14,7 @@ public enum EventType
     OnAnyActionCompleted,
     OnSelectedUnitChanged,
     OnAnyUnitMovedGridPosition,
-    OnAnyActionStarted
+    OnAnyActionStarted,
 }
 public enum GridObjectType
 {
@@ -161,9 +161,13 @@ public class GameControl : MonoBehaviour
         {
             obj.Init();
         }
+
         pathFinding.Init();
         UnitActionSystem.Instance.Init(selectedChatacter);
         GridSystemVisual.Instance.Init();
+        UnitActionSystemUI.Instance.Init();
+        ActionBusyUI.Instance.Init();
+
         QuequeLock = true;
         QuequeEvents.Clear();
 
