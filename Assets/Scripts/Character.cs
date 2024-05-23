@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using System;
 public class Character : MonoBehaviour
 {
     private const int ACTION_POINTS_MAX = 3;
@@ -14,9 +14,9 @@ public class Character : MonoBehaviour
     private BaseAction[] baseActionArray;
     [SerializeField] private bool isEnemy;
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        
+        baseActionArray = GetComponents<BaseAction>();
     }
 
     // Update is called once per frame

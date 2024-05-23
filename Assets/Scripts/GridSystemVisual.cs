@@ -25,6 +25,7 @@ public class GridSystemVisual : MonoBehaviour
         Red,
         RedSoft,
         Yellow,
+        Green
     }
 
     [SerializeField] private Transform gridSystemVisualSinglePrefab;
@@ -64,9 +65,13 @@ public class GridSystemVisual : MonoBehaviour
             }
         }
 
-       
-        //UnitActionSystem.Instance.OnSelectedActionChanged += UnitActionSystem_OnSelectedActionChanged;
-        //LevelGrid.Instance.OnAnyUnitMovedGridPosition += LevelGrid_OnAnyUnitMovedGridPosition;
+
+        GameControl.Instance
+            .AddHandlerToGridControl(this, HandlerDescriptors.GetMemberDescriptor<EventArgs>( typeof(GridSystemVisual), UnitActionSystem_OnSelectedActionChanged, EventType.OnAnyActionCompleted) );
+        GameControl.Instance
+            .AddHandlerToGridControl(this, HandlerDescriptors.GetMemberDescriptor<EventArgs>(typeof(GridSystemVisual), LevelGrid_OnAnyStartAction, EventType.OnAnyActionStarted));
+        GameControl.Instance
+          .AddHandlerToGridControl(this, HandlerDescriptors.GetMemberDescriptor<EventArgs>(typeof(GridSystemVisual), UnitActionSystem_OnSelectedActionChanged, EventType.OnSelectedUnitChange));
 
         UpdateGridVisual();
     }
@@ -157,7 +162,7 @@ public class GridSystemVisual : MonoBehaviour
         {
             default:
             case MoveAction moveAction:
-                gridVisualType = GridVisualType.White;
+                gridVisualType = GridVisualType.Green;
                 break;
         }
 
@@ -167,6 +172,7 @@ public class GridSystemVisual : MonoBehaviour
 
     private void UnitActionSystem_OnSelectedActionChanged(object sender, EventArgs e)
     {
+        Debug.Log("ACTION CHAHNGE");
         UpdateGridVisual();
     }
 
@@ -174,7 +180,10 @@ public class GridSystemVisual : MonoBehaviour
     {
         UpdateGridVisual();
     }
-
+    private void LevelGrid_OnAnyStartAction(object sender, EventArgs e)
+    {
+        HideAllGridPosition();
+    }
     private Material GetGridVisualTypeMaterial(GridVisualType gridVisualType)
     {
         foreach (GridVisualTypeMaterial gridVisualTypeMaterial in gridVisualTypeMaterialList)

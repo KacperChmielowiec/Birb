@@ -16,7 +16,7 @@ public class UnitSelectedVisual : MonoBehaviour
 
     private void Start()
     {
-        //UnitActionSystem.Instance.OnSelectedUnitChange += OnSelectedHandler;
+        GameControl.Instance.AddHandlerToGridControl(this, HandlerDescriptors.GetMemberDescriptor<EventArgs>(typeof(UnitSelectedVisual), OnSelectedHandler, EventType.OnSelectedUnitChange));
         UpdateSelected();
     }
 

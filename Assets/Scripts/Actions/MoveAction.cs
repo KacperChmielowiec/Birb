@@ -14,6 +14,11 @@ public class MoveAction : BaseAction
     private List<Vector3> positionList;
     private int currentPositionIndex;
 
+    public override void Start()
+    {
+        base.Start();
+    }
+
     private void Update()
     {
         if (!isActive)
@@ -24,8 +29,8 @@ public class MoveAction : BaseAction
         Vector3 targetPosition = positionList[currentPositionIndex];
         Vector3 moveDirection = (targetPosition - transform.position).normalized;
 
-        float rotateSpeed = 10f;
-        transform.forward = Vector3.Lerp(transform.forward, moveDirection, Time.deltaTime * rotateSpeed);
+/*        float rotateSpeed = 10f;
+        transform.forward = Vector3.Lerp(transform.forward, moveDirection, Time.deltaTime * rotateSpeed);*/
 
         float stoppingDistance = .1f;
         if (Vector3.Distance(transform.position, targetPosition) > stoppingDistance)
@@ -43,13 +48,13 @@ public class MoveAction : BaseAction
                 ActionComplete();
             }
         }
+
     }
 
 
     public override void TakeAction(Vector2Int gridPosition, Action onActionComplete)
     {
         List<PathNode> pathGridPositionList = GameControl.Instance.FindPath(unit.GetGridPosition(), gridPosition);
-
         currentPositionIndex = 0;
         positionList = new List<Vector3>();
 
@@ -98,7 +103,7 @@ public class MoveAction : BaseAction
                     continue;
                 }
 
-                if (!GameControl.Instance.pathFinding.HasPath(unitGridPosition, testGridPosition))
+             /*   if (!GameControl.Instance.pathFinding.HasPath(unitGridPosition, testGridPosition))
                 {
                     continue;
                 }
@@ -107,8 +112,8 @@ public class MoveAction : BaseAction
                 if (!(GameControl.Instance.pathFinding.GetPathLength(unitGridPosition, testGridPosition) > maxMoveDistance * pathfindingDistanceMultiplier))
                 {
                     // Path length is too long
-                    continue;
-                }
+                    continue;*/
+                
 
                 validGridPositionList.Add(testGridPosition);
             }

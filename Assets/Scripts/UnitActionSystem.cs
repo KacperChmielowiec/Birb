@@ -16,7 +16,7 @@ public class UnitActionSystem : MonoBehaviour
     public event EventHandler OnActionStarted;
 
 
-    [SerializeField] private GridObject selectedUnit;
+    private GridObject selectedUnit;
     [SerializeField] private LayerMask unitLayerMask;
 
     private BaseAction selectedAction;
@@ -37,9 +37,14 @@ public class UnitActionSystem : MonoBehaviour
     {
         
     }
-    public void Init()
+    public void Init(GridObject selected)
     {
-        SetSelectedUnit(selectedUnit);
+        GameControl.Instance.CreateEvent(ref OnSelectedUnitChanged, EventType.OnSelectedUnitChange, this);
+        GameControl.Instance.CreateEvent(ref OnSelectedActionChanged, EventType.OnSelectedActionChanged, this);
+        GameControl.Instance.CreateEvent(ref OnActionStarted, EventType.OnActionStarted, this);
+        GameControl.Instance.CreateEvent(ref OnBusyChanged, EventType.OnBusyChanged, this);
+
+        SetSelectedUnit(selected);
         Inited = true;
     }
 
@@ -52,7 +57,7 @@ public class UnitActionSystem : MonoBehaviour
             return;
         }
 
-        if (EventSystem.current.IsPointerOverGameObject())
+        if (EventSystem.current?.IsPointerOverGameObject() ?? false)
         {
             return;
         }
@@ -73,6 +78,7 @@ public class UnitActionSystem : MonoBehaviour
 
             if (!selectedAction.IsValidActionGridPosition(mouseGridPosition))
             {
+                Debug.Log("MOVE TAKE ACTION FORBIDDEN");
                 return;
             }
 
@@ -103,11 +109,14 @@ public class UnitActionSystem : MonoBehaviour
 
     private bool TryHandleUnitSelection()
     {
+       
         if (InputManager.Instance.IsMouseButtonDownThisFrame())
         {
+            
             Ray ray = Camera.main.ScreenPointToRay(InputManager.Instance.GetMouseScreenPosition());
             if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, unitLayerMask))
             {
+                
                 if (raycastHit.transform.TryGetComponent<GridObject>(out GridObject unit))
                 {
                     if (unit == selectedUnit)
@@ -138,6 +147,8 @@ public class UnitActionSystem : MonoBehaviour
         Character character = selectedUnit.GetComponent<Character>();
 
         SetSelectedAction(character.GetAction<MoveAction>());
+
+        GameControl.Instance.UpdateTargetCharacter(unit);
 
         OnSelectedUnitChanged?.Invoke(this, EventArgs.Empty);
     }

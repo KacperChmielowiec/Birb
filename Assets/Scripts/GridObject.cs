@@ -14,7 +14,19 @@ public class GridObject : MonoBehaviour
     public Vector2Int position;
     void Start()
     {
-       
+        GameControl.Instance.attachObject(this);
+    }
+    private void Update()
+    {
+        Vector2Int newGridPosition = GameControl.Instance.grid.getGridPosition(transform.position);
+        if (newGridPosition != position)
+        {
+            // Unit changed Grid Position
+            Vector2Int oldGridPosition = position;
+            position = newGridPosition;
+
+            GameControl.Instance.grid.UnitMovedGridPosition(this, oldGridPosition, newGridPosition);
+        }
     }
 
     public void Init()
@@ -29,9 +41,5 @@ public class GridObject : MonoBehaviour
 
     public Vector2Int GetGridPosition() { return position; }
     public PathNode GetGridPositionNode() { return new PathNode(position.x, position.y); }
-    // Update is called once per frame
-    void Update()
-    {
-      
-    }
+
 }

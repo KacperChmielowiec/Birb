@@ -12,6 +12,10 @@ public class Node
     {
         return GridObject != null;
     }
+    public void RemoveObject()
+    {
+        GridObject = null;
+    }
 
 
 }

@@ -16,6 +16,14 @@ public abstract class BaseAction : MonoBehaviour
     protected virtual void Awake()
     {
         unit = GetComponent<GridObject>();
+        
+    }
+
+    public virtual void Start()
+    {
+        
+        GameControl.Instance.CreateEvent(ref OnAnyActionCompleted, EventType.OnAnyActionCompleted, this);
+        GameControl.Instance.CreateEvent(ref OnAnyActionStarted, EventType.OnAnyActionStarted, this);
     }
 
     public abstract string GetActionName();
@@ -47,7 +55,7 @@ public abstract class BaseAction : MonoBehaviour
     {
         isActive = false;
         onActionComplete();
-
+        Debug.Log("Any action complete");
         OnAnyActionCompleted?.Invoke(this, EventArgs.Empty);
     }
 

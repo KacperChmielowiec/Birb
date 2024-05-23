@@ -12,6 +12,17 @@ public class Grid : MonoBehaviour
     public int cellSize = 1;
     [SerializeField] LayerMask obstaclesMask;
     [SerializeField] LayerMask terrainLayer;
+
+
+    public event EventHandler<OnAnyUnitMovedGridPositionEventArgs> OnAnyUnitMovedGridPosition;
+    public class OnAnyUnitMovedGridPositionEventArgs : EventArgs
+    {
+        public GridObject unit;
+        public Vector2Int fromGridPosition;
+        public Vector2Int toGridPosition;
+    }
+
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -20,8 +31,40 @@ public class Grid : MonoBehaviour
     private void Start()
     {
         GenerateGrid();
+        GameControl.Instance.CreateEvent(ref OnAnyUnitMovedGridPosition, EventType.OnAnyUnitMovedGridPosition, this);
         GameControl.Instance.OnInitGrid();
     }
+    public void UnitMovedGridPosition(GridObject unit, Vector2Int fromGridPosition, Vector2Int toGridPosition)
+    {
+        RemoveUnitAtGridPosition(fromGridPosition, unit);
+
+        AddUnitAtGridPosition(toGridPosition, unit);
+
+        OnAnyUnitMovedGridPosition?.Invoke(this, new OnAnyUnitMovedGridPositionEventArgs
+        {
+            unit = unit,
+            fromGridPosition = fromGridPosition,
+            toGridPosition = toGridPosition,
+        });
+    }
+    public void RemoveUnitAtGridPosition(Vector2Int gridPosition, GridObject unit)
+    {
+        Node node = GetGridNode(gridPosition);
+        if(node?.GridObject)
+        {
+            node.RemoveObject();
+        }
+    }
+
+    public void AddUnitAtGridPosition(Vector2Int gridPosition, GridObject unit)
+    {
+        Node node = GetGridNode(gridPosition);
+        if (node != null)
+        {
+            node.GridObject = unit;
+        }
+    }
+
     public PathNode GetNode(Vector2Int pos)
     {
         if(BoundaryCheck(pos))
