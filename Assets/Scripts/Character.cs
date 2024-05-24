@@ -19,10 +19,26 @@ public class Character : MonoBehaviour
         baseActionArray = GetComponents<BaseAction>();
     }
 
+    public void Init()
+    {
+        GameControl.Instance.CreateEvent(ref OnAnyActionPointsChanged, EventType.OnAnyActionPointsChanged, this);
+        GameControl.Instance.AddHandlerToGridControl(this, HandlerDescriptors.GetMemberDescriptor<EventArgs>(this.GetType(), TurnSystem_OnTurnChanged, EventType.OnTurnChanged));
+        OnAnyUnitSpawned.Invoke(this,EventArgs.Empty);
+    }
     // Update is called once per frame
     void Update()
     {
         
+    }
+    private void TurnSystem_OnTurnChanged(object sender, EventArgs e)
+    {
+        if ((IsEnemy() && !TurnSystem.Instance.IsPlayerTurn()) ||
+            (!IsEnemy() && TurnSystem.Instance.IsPlayerTurn()))
+        {
+            actionPoints = ACTION_POINTS_MAX;
+
+            OnAnyActionPointsChanged?.Invoke(this, EventArgs.Empty);
+        }
     }
 
     public bool TrySpendActionPointsToTakeAction(BaseAction baseAction)

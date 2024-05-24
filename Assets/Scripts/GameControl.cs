@@ -15,6 +15,8 @@ public enum EventType
     OnSelectedUnitChanged,
     OnAnyUnitMovedGridPosition,
     OnAnyActionStarted,
+    OnTurnChanged,
+    OnAnyActionPointsChanged
 }
 public enum GridObjectType
 {
@@ -167,7 +169,8 @@ public class GameControl : MonoBehaviour
         GridSystemVisual.Instance.Init();
         UnitActionSystemUI.Instance.Init();
         ActionBusyUI.Instance.Init();
-
+        TurnSystem.Instance.Init();
+        EnemyAI.Instance.Init();
         QuequeLock = true;
         QuequeEvents.Clear();
 

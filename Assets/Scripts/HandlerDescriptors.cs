@@ -14,7 +14,9 @@ public static class HandlerDescriptors
         {EventType.OnAnyUnitMovedGridPosition, new HandlerEventDescriptor() { GridEventType = EventType.OnAnyUnitMovedGridPosition} },
         {EventType.OnAnyActionStarted, new HandlerEventDescriptor() { GridEventType = EventType.OnAnyActionStarted} },
         {EventType.OnBusyChanged, new HandlerEventDescriptor() { GridEventType = EventType.OnBusyChanged} },
-        {EventType.OnActionStarted, new HandlerEventDescriptor() { GridEventType = EventType.OnActionStarted } }
+        {EventType.OnActionStarted, new HandlerEventDescriptor() { GridEventType = EventType.OnActionStarted } },
+        {EventType.OnTurnChanged, new HandlerEventDescriptor() { GridEventType = EventType.OnTurnChanged } },
+        {EventType.OnAnyActionPointsChanged, new HandlerEventDescriptor() { GridEventType = EventType.OnAnyActionPointsChanged } },
     };
 
 

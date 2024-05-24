@@ -29,10 +29,10 @@ public class UnitActionSystemUI : MonoBehaviour
     {
         GameControl.Instance.AddHandlerToGridControl(this, HandlerDescriptors.GetMemberDescriptor<EventArgs>(this.GetType(), UnitActionSystem_OnSelectedUnitChanged, EventType.OnSelectedUnitChange));
         GameControl.Instance.AddHandlerToGridControl(this, HandlerDescriptors.GetMemberDescriptor<EventArgs>(this.GetType(), UnitActionSystem_OnSelectedActionChanged, EventType.OnSelectedActionChanged));
-
         GameControl.Instance.AddHandlerToGridControl(this, HandlerDescriptors.GetMemberDescriptor<EventArgs>(this.GetType(), UnitActionSystem_OnActionStarted, EventType.OnActionStarted));
-        // UnitActionSystem.Instance.OnActionStarted += UnitActionSystem_OnActionStarted;
-
+        GameControl.Instance.AddHandlerToGridControl(this, HandlerDescriptors.GetMemberDescriptor<EventArgs>(this.GetType(), TurnSystem_OnTurnChanged, EventType.OnTurnChanged));
+        GameControl.Instance.AddHandlerToGridControl(this, HandlerDescriptors.GetMemberDescriptor<EventArgs>(this.GetType(), TurnSystem_OnTurnChanged, EventType.OnActionStarted));
+        GameControl.Instance.AddHandlerToGridControl(this, HandlerDescriptors.GetMemberDescriptor<EventArgs>(this.GetType(), Unit_OnAnyActionPointsChanged, EventType.OnAnyActionPointsChanged));
 
         UpdateActionPoints();
         CreateUnitActionButtons();
@@ -96,6 +96,14 @@ public class UnitActionSystemUI : MonoBehaviour
     private void TurnSystem_OnTurnChanged(object sender, EventArgs e)
     {
         UpdateActionPoints();
+        if(!TurnSystem.Instance.IsPlayerTurn())
+        {
+            actionButtonUIList.ForEach(b => b.gameObject.SetActive(false));
+        }
+        else
+        {
+            actionButtonUIList.ForEach(b => b.gameObject.SetActive(true));
+        }
     }
 
     private void Unit_OnAnyActionPointsChanged(object sender, EventArgs e)

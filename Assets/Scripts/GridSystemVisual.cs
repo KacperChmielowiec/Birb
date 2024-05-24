@@ -163,7 +163,7 @@ public class GridSystemVisual : MonoBehaviour
         {
             default:
             case MoveAction moveAction:
-                gridVisualType = selectedUnit.GetActionPoints() > selectedAction.GetActionPointsCost() ? GridVisualType.Green : GridVisualType.Orange;
+                gridVisualType = selectedUnit.GetActionPoints() >= selectedAction.GetActionPointsCost() ? GridVisualType.Green : GridVisualType.Orange;
                 break;
         }
 

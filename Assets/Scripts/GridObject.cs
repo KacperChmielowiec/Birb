@@ -32,6 +32,7 @@ public class GridObject : MonoBehaviour
     public void Init()
     {
         position = grid.getGridPosition(transform.position);
+        GetComponent<Character>().Init();
         grid.PlaceObject(this, position);
         Vector3 pos = grid.GetWorldPosition(position.x, position.y, true);
         transform.position = pos;

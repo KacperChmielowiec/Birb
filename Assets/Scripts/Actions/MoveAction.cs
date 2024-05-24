@@ -128,5 +128,15 @@ public class MoveAction : BaseAction
         return "Move";
     }
 
+    public override EnemyAIAction GetEnemyAIAction(Vector2Int gridPosition)
+    {
+        int targetCountAtGridPosition = 10;
+
+        return new EnemyAIAction
+        {
+            gridPosition = gridPosition,
+            actionValue = targetCountAtGridPosition * 10,
+        };
+    }
 
 }
