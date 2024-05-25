@@ -134,7 +134,7 @@ public class GameControl : MonoBehaviour
 
             foreach (var item in handlers)
             {
-                Debug.Log("HANDLE INVOKED");
+                
                 item.Handler.Invoke(sender, args);
             }
         }
@@ -144,7 +144,7 @@ public class GameControl : MonoBehaviour
     {
         if(!GridObjectsList.Contains(gridObject))
         {
-            Debug.Log("GRID OBJECT HAS BEEN ATTACHED");
+           
             GridObjectsList.Add(gridObject);
             GridObjectsWaiting.Add(gridObject);
             CreateEvent(

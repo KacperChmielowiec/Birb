@@ -50,7 +50,7 @@ public class Grid : MonoBehaviour
     public void RemoveUnitAtGridPosition(Vector2Int gridPosition, GridObject unit)
     {
         Node node = GetGridNode(gridPosition);
-        if(node?.GridObject)
+        if (node?.GridObject)
         {
             node.RemoveObject();
         }
@@ -67,9 +67,9 @@ public class Grid : MonoBehaviour
 
     public PathNode GetNode(Vector2Int pos)
     {
-        if(BoundaryCheck(pos))
+        if (BoundaryCheck(pos))
         {
-            return new PathNode(pos.x,pos.y);
+            return new PathNode(pos.x, pos.y);
         }
         return null;
     }
@@ -79,12 +79,12 @@ public class Grid : MonoBehaviour
         {
             for (int j = 0; j < height; j++)
             {
-                Ray ray = new Ray(GetWorldPosition(i,j) + Vector3.up * 30f, Vector3.down);
-                if(Physics.Raycast(ray, out RaycastHit hitInfo, float.MaxValue, terrainLayer))
+                Ray ray = new Ray(GetWorldPosition(i, j) + Vector3.up * 30f, Vector3.down);
+                if (Physics.Raycast(ray, out RaycastHit hitInfo, float.MaxValue, terrainLayer))
                 {
                     grid[i, j].elevation = hitInfo.point.y;
                 }
-               
+
             }
         }
     }
@@ -98,8 +98,8 @@ public class Grid : MonoBehaviour
     }
     public bool BoundaryCheck(Vector2Int pos)
     {
-        if(pos.x >= width || pos.y >= height) return false;
-        if(pos.x < 0 || pos.y < 0) return false;
+        if (pos.x >= width || pos.y >= height) return false;
+        if (pos.x < 0 || pos.y < 0) return false;
         return true;
     }
     public bool BoundaryCheck(PathNode pos)
@@ -126,7 +126,7 @@ public class Grid : MonoBehaviour
         }
         CalculateElevation();
         CheckPassableTerrain();
-        
+
     }
     public bool HasAnyUnitOnGridPosition(Vector2Int gridPosition)
     {
@@ -135,7 +135,7 @@ public class Grid : MonoBehaviour
     }
     public Node GetGridNode(Vector2Int pathNode)
     {
-        if(!BoundaryCheck(pathNode)) return null;
+        if (!BoundaryCheck(pathNode)) return null;
         return grid[pathNode.x, pathNode.y];
     }
     private void CheckPassableTerrain()
@@ -157,57 +157,58 @@ public class Grid : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
     private void OnDrawGizmos()
     {
-       
-        if(this.grid == null) return;
+
+        if (this.grid == null) return;
         for (int i = 0; i < width; i++)
         {
-            for(int j = 0; j < height; j++)
+            for (int j = 0; j < height; j++)
             {
                 Vector3 vector = GetWorldPosition(i, j, true);
-                Gizmos.color = !grid[i,j].Passable ? Color.red : Color.white;
-                Gizmos.DrawCube(vector, Vector3.one/4);
+                Gizmos.color = !grid[i, j].Passable ? Color.red : Color.white;
+                Gizmos.DrawCube(vector, Vector3.one / 4);
             }
         }
     }
-    public Vector3 GetWorldPosition(int x , int y, bool elevation = false)
+    public Vector3 GetWorldPosition(int x, int y, bool elevation = false)
     {
-      
-        return new Vector3(x * cellSize, elevation ? grid[x,y].elevation : 1f , y * cellSize);
+
+        return new Vector3(x * cellSize, elevation ? grid[x, y].elevation : 1f, y * cellSize);
     }
     public Vector2Int getGridPosition(Vector3 pos)
     {
-     
+
         pos.x -= cellSize / 2;
         pos.z -= cellSize / 2;
         return new Vector2Int() { x = (int)Mathf.Round(((pos.x / cellSize) * 2) / 2), y = (int)Mathf.Round(((pos.z / cellSize) * 2) / 2) };
     }
-    public void PlaceObject(GridObject obj,Vector2Int pos)
+    public void PlaceObject(GridObject obj, Vector2Int pos)
     {
         if (!BoundaryCheck(pos)) return;
         grid[pos.x, pos.y].GridObject = obj;
-        
+
     }
     public GridObject GetPlacedObject(Vector2Int pos)
     {
-        if(!BoundaryCheck(pos)) return null;
-        if (grid[pos.x,pos.y].GridObject != null)
+        if (!BoundaryCheck(pos)) return null;
+        if (grid[pos.x, pos.y].GridObject != null)
         {
             return grid[pos.x, pos.y].GridObject;
         }
         return null;
     }
 
-    internal List<Vector3> ConvertPathToWorldPositions(List<PathNode> pathNodes)
+    public List<Vector3> ConvertPathToWorldPositions(List<PathNode> pathNodes)
     {
         List<Vector3> result = new List<Vector3>();
         foreach (var item in pathNodes)
         {
-            result.Add(this.GetWorldPosition(item.pos_x, item.pos_y,true));
+            result.Add(this.GetWorldPosition(item.pos_x, item.pos_y, true));
         }
         return result;
     }
+
 }

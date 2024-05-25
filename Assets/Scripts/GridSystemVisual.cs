@@ -72,7 +72,9 @@ public class GridSystemVisual : MonoBehaviour
         GameControl.Instance
             .AddHandlerToGridControl(this, HandlerDescriptors.GetMemberDescriptor<EventArgs>(typeof(GridSystemVisual), LevelGrid_OnAnyStartAction, EventType.OnAnyActionStarted));
         GameControl.Instance
-          .AddHandlerToGridControl(this, HandlerDescriptors.GetMemberDescriptor<EventArgs>(typeof(GridSystemVisual), UnitActionSystem_OnSelectedActionChanged, EventType.OnSelectedUnitChange));
+            .AddHandlerToGridControl(this, HandlerDescriptors.GetMemberDescriptor<EventArgs>(typeof(GridSystemVisual), UnitActionSystem_OnSelectedActionChanged, EventType.OnSelectedUnitChange));
+        GameControl.Instance
+            .AddHandlerToGridControl(this, HandlerDescriptors.GetMemberDescriptor<EventArgs>(typeof(GridSystemVisual), UnitActionSystem_OnSelectedActionChanged, EventType.OnSelectedActionChanged));
 
         UpdateGridVisual();
     }
@@ -105,7 +107,10 @@ public class GridSystemVisual : MonoBehaviour
                 {
                     continue;
                 }
-
+                if (!GameControl.Instance.grid.CheckWalkable(testGridPosition))
+                {
+                    continue;
+                }
                 int testDistance = Mathf.Abs(x) + Mathf.Abs(z);
                 if (testDistance > range)
                 {
@@ -163,12 +168,18 @@ public class GridSystemVisual : MonoBehaviour
         {
             default:
             case MoveAction moveAction:
+                Debug.Log("MoveAction ACTION VISUAL CASE");
                 gridVisualType = selectedUnit.GetActionPoints() >= selectedAction.GetActionPointsCost() ? GridVisualType.Green : GridVisualType.Orange;
+                break;
+            case ShootAction shootAction:
+                Debug.Log("SHOOT ACTION VISUAL CASE");
+                gridVisualType = GridVisualType.Red;
+                //ShowGridPositionRange(selectedUnit.GetComponent<GridObject>().GetGridPosition(), shootAction.GetMaxShootDistance(), GridVisualType.Red);
                 break;
         }
 
         ShowGridPositionList(
-            selectedAction.GetValidActionGridPositionList(), gridVisualType);
+           selectedAction.GetValidActionGridPositionList(), gridVisualType);
     }
 
     private void UnitActionSystem_OnSelectedActionChanged(object sender, EventArgs e)

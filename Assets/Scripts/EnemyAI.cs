@@ -108,7 +108,7 @@ public class EnemyAI : MonoBehaviour
     {
         EnemyAIAction bestEnemyAIAction = null;
         BaseAction bestBaseAction = null;
-
+        Debug.Log("Enemy try take action");
         foreach (BaseAction baseAction in enemyUnit.GetBaseActionsArray())
         {
             if (!enemyUnit.CanSpendActionPointsToTakeAction(baseAction))

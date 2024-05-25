@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 973723019266670768}
   - component: {fileID: 7435293740998687367}
   - component: {fileID: 1928179536934378240}
+  - component: {fileID: 2948828870765873079}
+  - component: {fileID: -6341773214701103704}
   m_Layer: 0
   m_Name: Character
   m_TagString: Untagged
@@ -99,6 +101,34 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxMoveDistance: 4
+--- !u!114 &2948828870765873079
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4717448557238126091}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d069407141c59ef44a0c7b792c7a697e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: 100
+--- !u!114 &-6341773214701103704
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4717448557238126091}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ae30403692b85b40882f91922f4ebfd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  obstaclesLayerMask:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!1 &8044020764483145792
 GameObject:
   m_ObjectHideFlags: 0

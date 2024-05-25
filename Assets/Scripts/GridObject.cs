@@ -41,6 +41,7 @@ public class GridObject : MonoBehaviour
 
 
     public Vector2Int GetGridPosition() { return position; }
+    public Vector3 GetWorldPosition() { return transform.position; }
     public PathNode GetGridPositionNode() { return new PathNode(position.x, position.y); }
 
 }

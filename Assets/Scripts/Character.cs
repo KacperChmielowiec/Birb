@@ -12,18 +12,24 @@ public class Character : MonoBehaviour
     public static event EventHandler OnAnyUnitSpawned;
     public static event EventHandler OnAnyUnitDead;
     private BaseAction[] baseActionArray;
+    private HealthSystem healthSystem;
     [SerializeField] private bool isEnemy;
     // Start is called before the first frame update
     void Awake()
     {
+        healthSystem = GetComponent<HealthSystem>();
         baseActionArray = GetComponents<BaseAction>();
+    }
+    public void Damage(int damageAmount)
+    {
+        healthSystem.Damage(damageAmount);
     }
 
     public void Init()
     {
         GameControl.Instance.CreateEvent(ref OnAnyActionPointsChanged, EventType.OnAnyActionPointsChanged, this);
         GameControl.Instance.AddHandlerToGridControl(this, HandlerDescriptors.GetMemberDescriptor<EventArgs>(this.GetType(), TurnSystem_OnTurnChanged, EventType.OnTurnChanged));
-        OnAnyUnitSpawned.Invoke(this,EventArgs.Empty);
+        OnAnyUnitSpawned?.Invoke(this,EventArgs.Empty);
     }
     // Update is called once per frame
     void Update()
@@ -98,6 +104,10 @@ public class Character : MonoBehaviour
     public BaseAction[] GetBaseActionsArray()
     {
         return baseActionArray;
+    }
+    public float GetHealthNormalized()
+    {
+        return healthSystem.GetHealthNormalized();
     }
 
 }

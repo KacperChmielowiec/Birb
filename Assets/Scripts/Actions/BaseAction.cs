@@ -55,7 +55,6 @@ public abstract class BaseAction : MonoBehaviour
     {
         isActive = false;
         onActionComplete();
-        Debug.Log("Any action complete");
         OnAnyActionCompleted?.Invoke(this, EventArgs.Empty);
     }
 

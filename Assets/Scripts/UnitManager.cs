@@ -22,15 +22,12 @@ public class UnitManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
+        
         Instance = this;
 
         unitList = new List<Character>();
         friendlyUnitList = new List<Character>();
         enemyUnitList = new List<Character>();
-    }
-
-    private void Start()
-    {
         Character.OnAnyUnitSpawned += Unit_OnAnyUnitSpawned;
         Character.OnAnyUnitDead += Unit_OnAnyUnitDead;
     }
@@ -38,15 +35,17 @@ public class UnitManager : MonoBehaviour
     private void Unit_OnAnyUnitSpawned(object sender, EventArgs e)
     {
         Character unit = sender as Character;
-
+        
         unitList.Add(unit);
 
         if (unit.IsEnemy())
         {
+            Debug.Log("Add enemy");
             enemyUnitList.Add(unit);
         }
         else
         {
+            Debug.Log("Add character");
             friendlyUnitList.Add(unit);
         }
     }
