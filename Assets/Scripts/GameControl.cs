@@ -154,7 +154,10 @@ public class GameControl : MonoBehaviour
             );
         }
     }
-
+    public void DetachHandler(Type ComponentType, EventType EventType)
+    {
+        GameHandlers.RemoveAll(descriptor => descriptor.ComponentType == ComponentType && descriptor.GridEventType == EventType);
+    }
     public void OnInitGrid()
     {
         GridObject[] cloneList = new GridObject[GridObjectsList.Count];

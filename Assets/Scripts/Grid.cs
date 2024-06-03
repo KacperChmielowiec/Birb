@@ -36,7 +36,7 @@ public class Grid : MonoBehaviour
     }
     public void UnitMovedGridPosition(GridObject unit, Vector2Int fromGridPosition, Vector2Int toGridPosition)
     {
-        RemoveUnitAtGridPosition(fromGridPosition, unit);
+        RemoveUnitAtGridPosition(fromGridPosition);
 
         AddUnitAtGridPosition(toGridPosition, unit);
 
@@ -47,7 +47,7 @@ public class Grid : MonoBehaviour
             toGridPosition = toGridPosition,
         });
     }
-    public void RemoveUnitAtGridPosition(Vector2Int gridPosition, GridObject unit)
+    public void RemoveUnitAtGridPosition(Vector2Int gridPosition)
     {
         Node node = GetGridNode(gridPosition);
         if (node?.GridObject)
@@ -132,6 +132,15 @@ public class Grid : MonoBehaviour
     {
         Node gridNode = GetGridNode(gridPosition);
         return gridNode?.HasAnyUnit() ?? false;
+    }
+    public bool HasFriendUnitOnGridPosition(Vector2Int gridPosition)
+    {
+        Node gridNode = GetGridNode(gridPosition);
+        if (gridNode?.HasAnyUnit() == true)
+        {
+            return gridNode.GridObject.GetComponent<Character>().IsEnemy() == false; 
+        }
+        return false;
     }
     public Node GetGridNode(Vector2Int pathNode)
     {

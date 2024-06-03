@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Unity.VisualScripting;
 
 public class UnitActionSystemUI : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class UnitActionSystemUI : MonoBehaviour
     [SerializeField] private Transform actionButtonPrefab;
     [SerializeField] private Transform actionButtonContainerTransform;
     [SerializeField] private TextMeshProUGUI actionPointsText;
+    [SerializeField] private Image PointsBar;
 
     private List<ActionButtonUI> actionButtonUIList;
     public static UnitActionSystemUI Instance { get; private set; }
@@ -50,13 +52,12 @@ public class UnitActionSystemUI : MonoBehaviour
         actionButtonUIList.Clear();
 
         Character selectedUnit = UnitActionSystem.Instance.GetSelectedUnit()?.GetComponent<Character>();
-
-        foreach (BaseAction baseAction in selectedUnit.GetBaseActionsArray())
+        if (selectedUnit == null) return;
+        foreach (BaseAction baseAction in selectedUnit?.GetBaseActionsArray())
         {
             Transform actionButtonTransform = Instantiate(actionButtonPrefab, actionButtonContainerTransform);
             ActionButtonUI actionButtonUI = actionButtonTransform.GetComponent<ActionButtonUI>();
             actionButtonUI.SetBaseAction(baseAction);
-
             actionButtonUIList.Add(actionButtonUI);
         }
     }
@@ -67,10 +68,17 @@ public class UnitActionSystemUI : MonoBehaviour
         UpdateSelectedVisual();
         UpdateActionPoints();
     }
-
+    private void UnitActionSystem_OnSelectedUnitChanged()
+    {
+        CreateUnitActionButtons();
+        UpdateSelectedVisual();
+        UpdateActionPoints();
+    }
     private void UnitActionSystem_OnSelectedActionChanged(object sender, EventArgs e)
     {
         UpdateSelectedVisual();
+        Character selectedUnit = UnitActionSystem.Instance.GetSelectedUnit()?.GetComponent<Character>();
+        PointsBar.fillAmount = ((float)selectedUnit.GetActionPoints() / (float)selectedUnit.GetMaxActionPoints());
     }
 
     private void UnitActionSystem_OnActionStarted(object sender, EventArgs e)
@@ -88,9 +96,13 @@ public class UnitActionSystemUI : MonoBehaviour
 
     private void UpdateActionPoints()
     {
-        Character selectedUnit = UnitActionSystem.Instance.GetSelectedUnit()?.GetComponent<Character>();
+        var selectedUnit = UnitActionSystem.Instance?.GetSelectedUnit();
 
-        actionPointsText.text = "Action Points: " + selectedUnit.GetActionPoints();
+        if(selectedUnit != null)
+        {   var character = selectedUnit?.GetComponent<Character>();
+            actionPointsText.text = "Action Points: " + character.GetActionPoints();
+        }
+            
     }
 
     private void TurnSystem_OnTurnChanged(object sender, EventArgs e)
@@ -109,7 +121,9 @@ public class UnitActionSystemUI : MonoBehaviour
     private void Unit_OnAnyActionPointsChanged(object sender, EventArgs e)
     {
         UpdateActionPoints();
+        Character selectedUnit = UnitActionSystem.Instance.GetSelectedUnit()?.GetComponent<Character>();
+        if(selectedUnit != null)
+        PointsBar.fillAmount = ((float)selectedUnit.GetActionPoints() / (float)selectedUnit.GetMaxActionPoints());
     }
-
 }
 

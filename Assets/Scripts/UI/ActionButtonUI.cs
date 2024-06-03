@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System;
 
 public class ActionButtonUI : MonoBehaviour
 {
@@ -10,7 +11,7 @@ public class ActionButtonUI : MonoBehaviour
     [SerializeField] private Text textMeshPro;
     [SerializeField] private Button button;
     [SerializeField] private GameObject selectedGameObject;
-
+    private Action refreshAction;
 
     private BaseAction baseAction;
 

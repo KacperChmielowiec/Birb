@@ -40,12 +40,12 @@ public class UnitManager : MonoBehaviour
 
         if (unit.IsEnemy())
         {
-            Debug.Log("Add enemy");
+          
             enemyUnitList.Add(unit);
         }
         else
         {
-            Debug.Log("Add character");
+        
             friendlyUnitList.Add(unit);
         }
     }

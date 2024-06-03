@@ -15,7 +15,7 @@ public class UnitActionSystem : MonoBehaviour
     public event EventHandler<bool> OnBusyChanged;
     public event EventHandler OnActionStarted;
 
-
+    private GridObject LastSelectedUnit;
     private GridObject selectedUnit;
     [SerializeField] private LayerMask unitLayerMask;
 
@@ -43,6 +43,7 @@ public class UnitActionSystem : MonoBehaviour
         GameControl.Instance.CreateEvent(ref OnSelectedActionChanged, EventType.OnSelectedActionChanged, this);
         GameControl.Instance.CreateEvent(ref OnActionStarted, EventType.OnActionStarted, this);
         GameControl.Instance.CreateEvent(ref OnBusyChanged, EventType.OnBusyChanged, this);
+
 
         SetSelectedUnit(selected);
         Inited = true;
@@ -77,11 +78,11 @@ public class UnitActionSystem : MonoBehaviour
     {
         if (InputManager.Instance.IsMouseButtonDownThisFrame())
         {
-            Vector2Int mouseGridPosition = GameControl.Instance.grid.getGridPosition(MouseWorld.GetPosition());
+            Vector2Int mouseGridPosition = GameControl.Instance.grid.getGridPosition(MouseWorld.GetPositionUnit());
 
             if (!selectedAction.IsValidActionGridPosition(mouseGridPosition))
             {
-                Debug.Log("MOVE TAKE ACTION FORBIDDEN");
+               
                 return;
             }
 
@@ -91,6 +92,7 @@ public class UnitActionSystem : MonoBehaviour
             }
 
             SetBusy();
+            
             selectedAction.TakeAction(mouseGridPosition, ClearBusy);
 
             OnActionStarted?.Invoke(this, EventArgs.Empty);
@@ -145,6 +147,11 @@ public class UnitActionSystem : MonoBehaviour
 
     public void SetSelectedUnit(GridObject unit)
     {
+        if (unit == null)
+        {
+            selectedUnit = null;
+            return;
+        }
         selectedUnit = unit;
         
         Character character = selectedUnit.GetComponent<Character>();
@@ -158,12 +165,14 @@ public class UnitActionSystem : MonoBehaviour
 
     public void SetSelectedAction(BaseAction baseAction)
     {
+       
         selectedAction = baseAction;
+       
 
         OnSelectedActionChanged?.Invoke(this, EventArgs.Empty);
     }
 
-    public GridObject GetSelectedUnit()
+    public GridObject? GetSelectedUnit()
     {
         return selectedUnit;
     }

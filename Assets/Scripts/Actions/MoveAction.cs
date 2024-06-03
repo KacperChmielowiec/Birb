@@ -29,10 +29,10 @@ public class MoveAction : BaseAction
         Vector3 targetPosition = positionList[currentPositionIndex];
         Vector3 moveDirection = (targetPosition - transform.position).normalized;
 
-/*        float rotateSpeed = 10f;
-        transform.forward = Vector3.Lerp(transform.forward, moveDirection, Time.deltaTime * rotateSpeed);*/
+       float rotateSpeed = 10f;
+        transform.forward = Vector3.Lerp(transform.forward, moveDirection, Time.deltaTime * rotateSpeed);
 
-        float stoppingDistance = .1f;
+        float stoppingDistance = .01f;
         if (Vector3.Distance(transform.position, targetPosition) > stoppingDistance)
         {
             float moveSpeed = 4f;
@@ -40,9 +40,12 @@ public class MoveAction : BaseAction
         }
         else
         {
+           
+            
             currentPositionIndex++;
             if (currentPositionIndex >= positionList.Count)
             {
+                transform.forward = new Vector3(0, 0, 1);
                 OnStopMoving?.Invoke(this, EventArgs.Empty);
 
                 ActionComplete();
@@ -135,7 +138,7 @@ public class MoveAction : BaseAction
         return new EnemyAIAction
         {
             gridPosition = gridPosition,
-            actionValue = targetCountAtGridPosition * 10,
+            actionValue = targetCountAtGridPosition,
         };
     }
 

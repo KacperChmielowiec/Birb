@@ -22,7 +22,7 @@ public class HealthSystem : MonoBehaviour
     public void Damage(int damageAmount)
     {
         health -= damageAmount;
-
+        Debug.Log(health);
         if (health < 0)
         {
             health = 0;

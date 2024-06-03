@@ -41,4 +41,9 @@ public class UnitSelectedVisual : MonoBehaviour
     {
         
     }
+    private void OnDestroy()
+    {
+        GameControl.Instance.DetachHandler(typeof(UnitSelectedVisual), EventType.OnSelectedUnitChange);
+    }
 }
+

@@ -19,6 +19,9 @@ public class Character : MonoBehaviour
     {
         healthSystem = GetComponent<HealthSystem>();
         baseActionArray = GetComponents<BaseAction>();
+
+        healthSystem.OnDead += HealthSystem_OnDead;
+
     }
     public void Damage(int damageAmount)
     {
@@ -83,7 +86,10 @@ public class Character : MonoBehaviour
     {
         return actionPoints;
     }
-
+    public int GetMaxActionPoints()
+    {
+        return ACTION_POINTS_MAX;
+    }
     public bool IsEnemy()
     {
         return isEnemy;
@@ -109,5 +115,23 @@ public class Character : MonoBehaviour
     {
         return healthSystem.GetHealthNormalized();
     }
+
+    private void HealthSystem_OnDead(object sender, EventArgs e)
+    {
+        GridObject gridObject = GameControl.Instance.grid.GetPlacedObject(GetComponent<GridObject>().GetGridPosition());
+        GameControl.Instance.grid.RemoveUnitAtGridPosition(GetComponent<GridObject>().GetGridPosition());
+
+        if(UnitActionSystem.Instance.GetSelectedUnit() == gridObject)
+        {
+            UnitActionSystem.Instance.SetSelectedUnit(null);
+        }
+
+        Destroy(gridObject.gameObject);
+        Destroy(gameObject);
+        
+        OnAnyUnitDead?.Invoke(this, EventArgs.Empty);
+    }
+
+
 
 }

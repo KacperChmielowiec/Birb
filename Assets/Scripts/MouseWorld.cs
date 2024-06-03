@@ -9,6 +9,7 @@ public class MouseWorld : MonoBehaviour
 
 
     [SerializeField] private LayerMask mousePlaneLayerMask;
+    [SerializeField] private LayerMask unitsLayer;
 
     private void Awake()
     {
@@ -20,6 +21,15 @@ public class MouseWorld : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(InputManager.Instance.GetMouseScreenPosition());
         Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, instance.mousePlaneLayerMask);
         return raycastHit.point;
+    }
+    public static Vector3 GetPositionUnit()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(InputManager.Instance.GetMouseScreenPosition());
+        if(Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, instance.unitsLayer))
+        {
+            return raycastHit.point;
+        }
+        return GetPosition();
     }
 
 }

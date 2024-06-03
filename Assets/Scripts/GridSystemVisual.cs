@@ -75,6 +75,8 @@ public class GridSystemVisual : MonoBehaviour
             .AddHandlerToGridControl(this, HandlerDescriptors.GetMemberDescriptor<EventArgs>(typeof(GridSystemVisual), UnitActionSystem_OnSelectedActionChanged, EventType.OnSelectedUnitChange));
         GameControl.Instance
             .AddHandlerToGridControl(this, HandlerDescriptors.GetMemberDescriptor<EventArgs>(typeof(GridSystemVisual), UnitActionSystem_OnSelectedActionChanged, EventType.OnSelectedActionChanged));
+        GameControl.Instance
+            .AddHandlerToGridControl(this, HandlerDescriptors.GetMemberDescriptor<EventArgs>(typeof(GridSystemVisual), UnitActionSystem_OnTourChanged, EventType.OnTurnChanged));
 
         UpdateGridVisual();
     }
@@ -161,21 +163,27 @@ public class GridSystemVisual : MonoBehaviour
 
         Character selectedUnit = UnitActionSystem.Instance.GetSelectedUnit()?.GetComponent<Character>();
         BaseAction selectedAction = UnitActionSystem.Instance.GetSelectedAction();
-
+        if (selectedUnit == null) return;
         GridVisualType gridVisualType;
 
         switch (selectedAction)
         {
             default:
             case MoveAction moveAction:
-                Debug.Log("MoveAction ACTION VISUAL CASE");
+              
                 gridVisualType = selectedUnit.GetActionPoints() >= selectedAction.GetActionPointsCost() ? GridVisualType.Green : GridVisualType.Orange;
                 break;
             case ShootAction shootAction:
-                Debug.Log("SHOOT ACTION VISUAL CASE");
+              
                 gridVisualType = GridVisualType.Red;
                 //ShowGridPositionRange(selectedUnit.GetComponent<GridObject>().GetGridPosition(), shootAction.GetMaxShootDistance(), GridVisualType.Red);
                 break;
+            case MeleeAction swordAction:
+                gridVisualType = GridVisualType.Red;
+             
+                //ShowGridPositionRangeSquare(UnitActionSystem.Instance.GetSelectedUnit().GetGridPosition(), swordAction.GetMaxSwordDistance(), GridVisualType.Red);
+                break;
+
         }
 
         ShowGridPositionList(
@@ -184,17 +192,37 @@ public class GridSystemVisual : MonoBehaviour
 
     private void UnitActionSystem_OnSelectedActionChanged(object sender, EventArgs e)
     {
-        Debug.Log("ACTION CHAHNGE");
-        UpdateGridVisual();
-    }
+        if (TurnSystem.Instance.IsPlayerTurn())
+        {
+            UpdateGridVisual();
 
+        }
+           
+    }
+    private void UnitActionSystem_OnTourChanged(object sender, EventArgs e)
+    {
+        if(!TurnSystem.Instance.IsPlayerTurn())
+        {
+            HideAllGridPosition();
+        }
+        else
+        {
+            UpdateGridVisual();
+        }
+    }
     private void LevelGrid_OnAnyUnitMovedGridPosition(object sender, EventArgs e)
     {
-        UpdateGridVisual();
+        if (TurnSystem.Instance.IsPlayerTurn())
+        {
+            UpdateGridVisual();
+        }
     }
     private void LevelGrid_OnAnyStartAction(object sender, EventArgs e)
     {
-        HideAllGridPosition();
+        if (TurnSystem.Instance.IsPlayerTurn())
+        {
+            UpdateGridVisual();
+        }
     }
     private Material GetGridVisualTypeMaterial(GridVisualType gridVisualType)
     {
